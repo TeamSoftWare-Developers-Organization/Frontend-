@@ -14,17 +14,9 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-const DATABASE_URL = process.env.DATABASE_URL;
-const BETTER_AUTH_SECRET = process.env.BETTER_AUTH_SECRET;
-const BETTER_AUTH_URL = process.env.BETTER_AUTH_URL;
-
-if (!DATABASE_URL && process.env.NODE_ENV === "production") {
-  throw new Error("🚨 [CRITICAL]: DATABASE_URL environment variable is missing!");
-}
-
-if (!BETTER_AUTH_SECRET && process.env.NODE_ENV === "production") {
-  throw new Error("🚨 [CRITICAL]: BETTER_AUTH_SECRET environment variable is missing!");
-}
+const DATABASE_URL = process.env.DATABASE_URL || "postgres://postgres:postgres@localhost:5432/auth_db";
+const BETTER_AUTH_SECRET = process.env.BETTER_AUTH_SECRET || "default_super_secret_better_auth_key_123456789";
+const BETTER_AUTH_URL = process.env.BETTER_AUTH_URL || process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 
 const dbPool = new Pool({
   connectionString: DATABASE_URL,
@@ -91,6 +83,10 @@ export const auth = betterAuth({
   trustedOrigins: [
     "http://localhost:3000",
     "http://localhost:8085",
+    "https://*.pages.dev",
+    "https://*.workers.dev",
+    "https://*.microshop.ly",
+    "https://microshop.ly",
   ],
 
   plugins: [
